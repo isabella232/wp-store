@@ -53,24 +53,34 @@ public class MarketItem {
 
         //MarketItem miDeserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<MarketItem>(jsonObject.ToString());
         
-        /*
+        
         JToken jValue;
         if (jsonObject.TryGetValue(StoreJSONConsts.MARKETITEM_MANAGED, out jValue)) {
-            this.mManaged = jsonObject.Value<int>(StoreJSONConsts.MARKETITEM_MANAGED);
+            SoomlaUtils.LogDebug(TAG,jValue.ToString());
+            if (jValue.Value<int>() == 0)
+            {
+                this.mManaged = Managed.MANAGED;
+            }
+            else
+            {
+                this.mManaged = Managed.UNMANAGED;
+            }
+            
         } else {
             this.mManaged = Managed.UNMANAGED;
         }
-        if (jsonObject.has(StoreJSONConsts.MARKETITEM_ANDROID_ID)) {
-            this.mProductId = jsonObject.getString(StoreJSONConsts.MARKETITEM_ANDROID_ID);
+        if (jsonObject.TryGetValue(StoreJSONConsts.MARKETITEM_PRODUCT_ID, out jValue))
+        {
+            this.mProductId = jsonObject.Value<String>(StoreJSONConsts.MARKETITEM_PRODUCT_ID);
         } else {
-            this.mProductId = jsonObject.getString(StoreJSONConsts.MARKETITEM_PRODUCT_ID);
+            SoomlaUtils.LogError(TAG, "Market Item No Product ID");
         }
-        this.mPrice = jsonObject.getDouble(StoreJSONConsts.MARKETITEM_PRICE);
+        this.mPrice = jsonObject.Value<double>(StoreJSONConsts.MARKETITEM_PRICE);
 
-        this.mMarketPrice = jsonObject.optString(StoreJSONConsts.MARKETITEM_MARKETPRICE);
-        this.mMarketTitle = jsonObject.optString(StoreJSONConsts.MARKETITEM_MARKETTITLE);
-        this.mMarketDescription = jsonObject.optString(StoreJSONConsts.MARKETITEM_MARKETDESC);
-        */
+        this.mMarketPrice = jsonObject.Value<string>(StoreJSONConsts.MARKETITEM_MARKETPRICE);
+        this.mMarketTitle = jsonObject.Value<string>(StoreJSONConsts.MARKETITEM_MARKETTITLE);
+        this.mMarketDescription = jsonObject.Value<string>(StoreJSONConsts.MARKETITEM_MARKETDESC);
+        
     }
 
     /**
@@ -80,15 +90,27 @@ public class MarketItem {
      */
     public JObject toJSONObject(){
         JObject jsonObject = new JObject();
-        /*
+        
         try {
-            jsonObject.put(StoreJSONConsts.MARKETITEM_MANAGED, mManaged.ordinal());
-            jsonObject.put(StoreJSONConsts.MARKETITEM_ANDROID_ID, mProductId);
-            jsonObject.put(StoreJSONConsts.MARKETITEM_PRICE, Double.valueOf(mPrice));
-        } catch (JSONException e) {
+            if (mManaged == Managed.MANAGED)
+            {
+                jsonObject.Add(StoreJSONConsts.MARKETITEM_MANAGED, 0);
+            }
+            if (mManaged == Managed.UNMANAGED)
+            {
+                jsonObject.Add(StoreJSONConsts.MARKETITEM_MANAGED, 1);
+            }
+            jsonObject.Add(StoreJSONConsts.MARKETITEM_PRODUCT_ID, mProductId);
+            jsonObject.Add(StoreJSONConsts.MARKETITEM_PRICE, mPrice);
+
+            jsonObject.Add(StoreJSONConsts.MARKETITEM_MARKETPRICE, mMarketPrice);
+            jsonObject.Add(StoreJSONConsts.MARKETITEM_MARKETTITLE, mMarketTitle);
+            jsonObject.Add(StoreJSONConsts.MARKETITEM_MARKETDESC, mMarketDescription);
+
+        } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");
         }
-        */
+        
         return jsonObject;
     }
 

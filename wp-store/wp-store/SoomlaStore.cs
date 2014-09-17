@@ -87,8 +87,7 @@ namespace SoomlaWpStore
     ///                                                 refresh market items operation right after a
     ///                                                 restore purchase success. </param>
     private void restoreTransactions(bool followedByRefreshItemsDetails) {
-        SoomlaUtils.LogDebug(TAG, "TODO restore Transaction");
-
+        
         StoreEvents.GetInstance().PostRestoreTransactionsStartedEvent();
 
         if (StoreConfig.STORE_TEST_MODE)
@@ -186,9 +185,6 @@ namespace SoomlaWpStore
      */
     public void refreshMarketItemsDetails(Dictionary<string, MarketProductInfos> marketInfos)
     {
-        SoomlaUtils.LogDebug(TAG, "TODO refreshMarketItemsDetails");
-        
-
         List<MarketItem> marketItems = new List<MarketItem>();
         foreach (var mpi in marketInfos)
         {
@@ -535,11 +531,13 @@ namespace SoomlaWpStore
      * @param purchase purchase to be consumed
      */
     private void consumeIfConsumable(PurchasableVirtualItem pvi) {
-        SoomlaUtils.LogDebug(TAG, "TODO consumeIfConsumable");
-        
         try {
             if (!(pvi is NonConsumableItem)) {
-                StoreManager.GetInstance().Consume(pvi.getItemId());
+                if (pvi.GetPurchaseType() is PurchaseWithMarket)
+                {
+                    PurchaseWithMarket pwm = (PurchaseWithMarket)pvi.GetPurchaseType();
+                    StoreManager.GetInstance().Consume(pwm.getMarketItem().getProductId());
+                }
             }
         } catch (Exception e) {
             SoomlaUtils.LogDebug(TAG, "Error while consuming: itemId: " + pvi.getItemId());

@@ -34,6 +34,7 @@ namespace SoomlaWpStore.data
         {
             try
             {
+                SoomlaUtils.LogDebug(TAG,"Prepare :\n"+JsonStoreAssets);
                 mVersion = version;
 
                 JObject JObject = JObject.Parse(JsonStoreAssets);
@@ -69,36 +70,42 @@ namespace SoomlaWpStore.data
                 {
                     JObject o = suGoods.Value<JObject>(i);
                     SingleUseVG g = new SingleUseVG(o);
+                    SoomlaUtils.LogDebug(TAG, "SingleUseVG " + g.getItemId());
                     goods.Add(g);
                 }
                 for (int i = 0; i < ltGoods.Count; i++)
                 {
                     JObject o = ltGoods.Value<JObject>(i);
                     LifetimeVG g = new LifetimeVG(o);
+                    SoomlaUtils.LogDebug(TAG, "LifetimeVG " + g.getItemId());
                     goods.Add(g);
                 }
                 for (int i = 0; i < eqGoods.Count; i++)
                 {
                     JObject o = eqGoods.Value<JObject>(i);
                     EquippableVG g = new EquippableVG(o);
+                    SoomlaUtils.LogDebug(TAG, "EquippableVG " + g.getItemId());
                     goods.Add(g);
                 }
                 for (int i = 0; i < paGoods.Count; i++)
                 {
                     JObject o = paGoods.Value<JObject>(i);
                     SingleUsePackVG g = new SingleUsePackVG(o);
+                    SoomlaUtils.LogDebug(TAG, "SingleUsePackVG " + g.getItemId());
                     goods.Add(g);
                 }
                 for (int i = 0; i < upGoods.Count; i++)
                 {
                     JObject o = upGoods.Value<JObject>(i);
                     UpgradeVG g = new UpgradeVG(o);
+                    SoomlaUtils.LogDebug(TAG, "UpgradeVG " + g.getItemId());
                     goods.Add(g);
                 }
 
                 mVirtualGood = new VirtualGood[goods.Count];
                 for(int i = 0; i < goods.Count; i++)
                 {
+                    SoomlaUtils.LogDebug(TAG, "VirtualGood " + goods[i].getItemId());
                     mVirtualGood[i] = goods[i];
                 }
 

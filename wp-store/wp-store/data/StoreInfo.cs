@@ -93,7 +93,7 @@ public class StoreInfo {
         SoomlaUtils.LogDebug(TAG, "the metadata-economy json (from DB) is " + val);
 
         try {
-            fromJObject(new JObject(val));
+            fromJObject(JObject.Parse(val));
 
             // everything went well... StoreInfo is initialized from the local DB.
             // it's ok to return now.
@@ -131,11 +131,15 @@ public class StoreInfo {
      * <code>itemId</code> was found.
      */
     public static VirtualItem getVirtualItem(String itemId) {
-        VirtualItem item = mVirtualItems[itemId];
-        if (item == null) {
+        VirtualItem item;
+        try
+        {
+            item = mVirtualItems[itemId];
+        }
+        catch (KeyNotFoundException e)
+        {
             throw new VirtualItemNotFoundException("itemId", itemId);
         }
-
         return item;
     }
 
@@ -150,8 +154,13 @@ public class StoreInfo {
      *         productId was found.
      */
     public static PurchasableVirtualItem getPurchasableItem(String productId){
-        PurchasableVirtualItem item = mPurchasableItems[productId];
-        if (item == null) {
+        PurchasableVirtualItem item;
+        try
+        {
+            item = mPurchasableItems[productId];
+        }
+        catch(KeyNotFoundException e)
+        {
             throw new VirtualItemNotFoundException("productId", productId);
         }
 
@@ -167,11 +176,15 @@ public class StoreInfo {
      * @throws VirtualItemNotFoundException if the given <code>goodItemId</code> is not found
      */
     public static VirtualCategory getCategory(String goodItemId){
-        VirtualCategory item = mGoodsCategories[goodItemId];
-        if (item == null) {
+        VirtualCategory item;
+        try
+        {
+            item = mGoodsCategories[goodItemId];
+        }
+        catch (KeyNotFoundException e)
+        {
             throw new VirtualItemNotFoundException("goodItemId", goodItemId);
         }
-
         return item;
     }
 

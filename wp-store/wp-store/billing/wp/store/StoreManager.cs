@@ -177,6 +177,11 @@ namespace SoomlaWpStore.billing.wp.store
         /// <param name="productId">    Identifier for the product. </param>
         public void PurchaseProduct(string productId)
         {
+            Deployment.Current.Dispatcher.BeginInvoke(() =>
+                {
+                    DoPurchase(productId);
+                });
+            /*
             if (Dispatcher.InvokeOnUIThread == null)
             {
                 try
@@ -195,6 +200,7 @@ namespace SoomlaWpStore.billing.wp.store
                     DoPurchase(productId);
                 });
             }
+             */
         }
 
         private async void DoPurchase(string productId)
