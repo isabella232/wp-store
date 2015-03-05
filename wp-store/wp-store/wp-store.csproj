@@ -163,12 +163,6 @@
     <Compile Include="data\VirtualCurrencyStorage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="data\NonConsumableItemsStorage.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="domain\NonConsumableItem.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="domain\virtualCurrencies\VirtualCurrencyPack.cs" />
   </ItemGroup>
   <ItemGroup>

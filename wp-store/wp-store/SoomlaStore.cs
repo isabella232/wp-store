@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using SoomlaWpCore;
 using SoomlaWpCore.data;
 using SoomlaWpStore.domain;
+using SoomlaWpStore.domain.virtualGoods;
 using SoomlaWpStore.data;
 using SoomlaWpStore.purchasesTypes;
 using SoomlaWpStore.billing.wp.store;
@@ -54,10 +55,7 @@ namespace SoomlaWpStore
 
         StoreConfig.STORE_TEST_MODE = testMode;
 
-        StoreManager.OnItemPurchasedCB += handleSuccessfulPurchase;
-        StoreManager.OnItemPurchaseCancelCB += handleCancelledPurchase;
-        StoreManager.OnListingLoadedCB += refreshMarketItemsDetails;
-        StoreManager.GetInstance().Initialize();
+        initStoreManager();
 
         SoomlaUtils.LogDebug(TAG, "SoomlaStore Initializing ...");
 
@@ -71,6 +69,14 @@ namespace SoomlaWpStore
         mInitialized = true;
         StoreEvents.GetInstance().PostSoomlaStoreInitializedEvent();
         return true;
+    }
+
+    public void initStoreManager()
+    {
+        StoreManager.OnItemPurchasedCB += handleSuccessfulPurchase;
+        StoreManager.OnItemPurchaseCancelCB += handleCancelledPurchase;
+        StoreManager.OnListingLoadedCB += refreshMarketItemsDetails;
+        StoreManager.GetInstance().Initialize();
     }
 
     /// <summary>
@@ -434,13 +440,14 @@ namespace SoomlaWpStore
         // if the purchasable item is NonConsumableItem and it already exists then we
         // don't fire any events.
         // fixes: https://github.com/soomla/unity3d-store/issues/192
+        /*
         if (pvi is NonConsumableItem) {
             bool exists = StorageManager.getNonConsumableItemsStorage().
                     nonConsumableItemExists((NonConsumableItem) pvi);
             if (exists) {
                 return;
             }
-        }
+        }*/
 
         StoreEvents.GetInstance().PostMarketPurchaseEvent(pvi,null,null);
         pvi.give(1);
@@ -532,7 +539,7 @@ namespace SoomlaWpStore
      */
     private void consumeIfConsumable(PurchasableVirtualItem pvi) {
         try {
-            if (!(pvi is NonConsumableItem)) {
+            if (!(pvi is SingleUseVG)) {
                 if (pvi.GetPurchaseType() is PurchaseWithMarket)
                 {
                     PurchaseWithMarket pwm = (PurchaseWithMarket)pvi.GetPurchaseType();

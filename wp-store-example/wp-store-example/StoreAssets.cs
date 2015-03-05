@@ -18,7 +18,7 @@ public class StoreAssets : IStoreAssets {
 	}
 	
 	public VirtualGood[] GetGoods() {
-        return new VirtualGood[] { GLOVE1_GOOD, GLOVE2_GOOD, GLOVE3_GOOD, BOOTS1_GOOD, BOOTS2_GOOD, BOOTS3_GOOD };
+        return new VirtualGood[] {NO_ADS, GLOVE1_GOOD, GLOVE2_GOOD, GLOVE3_GOOD, BOOTS1_GOOD, BOOTS2_GOOD, BOOTS3_GOOD };
 	}
 	
 	public VirtualCurrencyPack[] GetCurrencyPacks() {
@@ -28,11 +28,11 @@ public class StoreAssets : IStoreAssets {
 	public VirtualCategory[] GetCategories() {
 		return new VirtualCategory[]{GLOVE_CATEGORY,BOOTS_CATEGORY,OTHER_ITEMS_CATEGORY};
 	}
-	
+	/*
 	public NonConsumableItem[] GetNonConsumableItems() {
 		return new NonConsumableItem[]{NO_ADS};
 	}
-	
+	*/
 	/** Static Final members **/
 	public const string WEAK_CURRENCY_ITEM_ID      = "currency_weak";
 	public const string STRONG_CURRENCY_ITEM_ID      = "currency_strong";
@@ -194,7 +194,7 @@ public class StoreAssets : IStoreAssets {
 	
 	/** Market MANAGED Items **/
 
-	public static NonConsumableItem NO_ADS  = new NonConsumableItem(
+    public static LifetimeVG NO_ADS = new LifetimeVG(
 		"No Ads",
 		"Remove all ads from the game.",
 		NO_ADS_ID,

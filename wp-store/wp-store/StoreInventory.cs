@@ -266,6 +266,7 @@ public class StoreInventory {
      * @throws VirtualItemNotFoundException
      * @throws ClassCastException
      */
+    /*
     public static bool nonConsumableItemExists(String nonConsItemId) {
         NonConsumableItem nonConsumableItem =
                 (NonConsumableItem) StoreInfo.getVirtualItem(nonConsItemId);
@@ -273,7 +274,7 @@ public class StoreInventory {
         return StorageManager.getNonConsumableItemsStorage().nonConsumableItemExists(
                 nonConsumableItem);
     }
-
+    */
     /**
      * Adds the non-consumable item with the given <code>nonConsItemId</code> to the non-consumable
      * items storage.
@@ -282,13 +283,14 @@ public class StoreInventory {
      * @throws VirtualItemNotFoundException
      * @throws ClassCastException
      */
+    /*
     public static void addNonConsumableItem(String nonConsItemId) {
         NonConsumableItem nonConsumableItem =
                 (NonConsumableItem) StoreInfo.getVirtualItem(nonConsItemId);
 
         StorageManager.getNonConsumableItemsStorage().add(nonConsumableItem);
     }
-
+    */
     /**
      * Removes the non-consumable item with the given <code>nonConsItemId</code> from the
      * non-consumable items storage.
@@ -297,11 +299,12 @@ public class StoreInventory {
      * @throws VirtualItemNotFoundException
      * @throws ClassCastException
      */
+    /*
     public static void removeNonConsumableItem(String nonConsItemId) {
         NonConsumableItem nonConsumableItem =
                 (NonConsumableItem) StoreInfo.getVirtualItem(nonConsItemId);
 
         StorageManager.getNonConsumableItemsStorage().remove(nonConsumableItem);
-    }
+    }*/
 }
 }

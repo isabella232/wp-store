@@ -62,11 +62,8 @@ namespace wp_store_example
                 buildShopLine(vc);
             }
 
-            foreach (NonConsumableItem nci in StoreInfo.getNonConsumableItems())
-            {
-                buildShopLine(nci);
-            }
-            
+            buildShopLine((VirtualGood)StoreInfo.getVirtualItem(StoreAssets.NO_ADS_ID));
+                        
             foreach (string id in StoreAssets.BOOTS_CATEGORY.getGoodsItemIds())
             {
                 buildShopLine(StoreInfo.getVirtualItem(id));
@@ -93,14 +90,22 @@ namespace wp_store_example
             stackP.Children.Add(buttonStack);
             stackP.Children.Add(textStack);
 
-            Button buy = new Button();
-            buy.Margin = new Thickness(0, 0, 10, 0);
-            buy.Click += buyItem;
-            buy.Content = "buy";
-            buy.CommandParameter = item.getItemId();
-            buy.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
-            buy.VerticalAlignment = System.Windows.VerticalAlignment.Center;
-            buttonStack.Children.Add(buy);
+            if (item is LifetimeVG && StoreInventory.getVirtualItemBalance(item.getItemId()) > 0)
+            {
+                //LifeTimeVG already buyed
+            }
+            else
+            {
+                Button buy = new Button();
+                buy.Margin = new Thickness(0, 0, 10, 0);
+                buy.Click += buyItem;
+                buy.Content = "buy";
+                buy.CommandParameter = item.getItemId();
+                buy.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
+                buy.VerticalAlignment = System.Windows.VerticalAlignment.Center;
+                buttonStack.Children.Add(buy);
+            }
+            
 
             if(item is EquippableVG)
             {
@@ -127,7 +132,7 @@ namespace wp_store_example
             TextBlock balance = new TextBlock();
             balance.VerticalAlignment = System.Windows.VerticalAlignment.Center;
             balance.Margin = new Thickness(0,0,10,0);
-            if (!(item is VirtualCurrencyPack) && !(item is NonConsumableItem))
+            if (!(item is VirtualCurrencyPack))
             {
                 balance.Text = "balance: "+StoreInventory.getVirtualItemBalance(item.getItemId()).ToString();
             }

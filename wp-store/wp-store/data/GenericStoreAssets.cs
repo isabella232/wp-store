@@ -17,7 +17,7 @@ namespace SoomlaWpStore.data
         VirtualGood[] mVirtualGood;
         VirtualCurrencyPack[] mVirtualCurrencyPack;
         VirtualCategory[] mVirtualCategory;
-        NonConsumableItem[] mNonConsumableItem;
+        //NonConsumableItem[] mNonConsumableItem;
         int mVersion;
 
         private static GenericStoreAssets instance;
@@ -118,7 +118,7 @@ namespace SoomlaWpStore.data
                     VirtualCategory category = new VirtualCategory(o);
                     mVirtualCategory[i] = category;
                 }
-
+                /*
                 JArray nonConsumables = JObject.Value<JArray>(StoreJSONConsts.STORE_NONCONSUMABLES);
                 mNonConsumableItem = new NonConsumableItem[nonConsumables.Count];
                 for (int i = 0; i < nonConsumables.Count; i++)
@@ -127,7 +127,7 @@ namespace SoomlaWpStore.data
                     NonConsumableItem non = new NonConsumableItem(o);
                     mNonConsumableItem[i] = non;
                 }
-
+                */
             }
             catch (Exception ex)
             {
@@ -156,10 +156,11 @@ namespace SoomlaWpStore.data
         {
             return mVirtualCategory;
         }
+        /*
         public NonConsumableItem[] GetNonConsumableItems()
         {
             return mNonConsumableItem;
-        }
+        }*/
 
         private const String TAG = "SOOMLA GenericStoreAssets"; //used for Log messages
 

@@ -210,6 +210,7 @@ namespace SoomlaWpStore.billing.wp.store
                 bool licenceActiv = false;
                 if (StoreConfig.STORE_TEST_MODE)
                 {
+                    SoomlaUtils.LogDebug(TAG, "DoPurchase test mode " + productId);
                     // Kick off purchase; don't ask for a receipt when it returns
                     await MockCurApp.RequestProductPurchaseAsync(productId, false);
                     licInfosMock = MockCurApp.LicenseInformation;
@@ -217,6 +218,7 @@ namespace SoomlaWpStore.billing.wp.store
                 }
                 else
                 {
+                    SoomlaUtils.LogDebug(TAG, "DoPurchase real store" + productId);
                     // Kick off purchase; don't ask for a receipt when it returns
                     await CurApp.RequestProductPurchaseAsync(productId, false);
                     licInfos = CurApp.LicenseInformation;

@@ -251,10 +251,10 @@ public class StoreInfo {
     public static List<VirtualGood> getGoods() {
         return mGoods;
     }
-
+    /*
     public static List<NonConsumableItem> getNonConsumableItems() {
         return mNonConsumables;
-    }
+    }*/
 
     public static List<VirtualCategory> getCategories() {
         return mCategories;
@@ -282,7 +282,7 @@ public class StoreInfo {
         mGoods = new List<VirtualGood>();
         mCategories = new List<VirtualCategory>();
         mCurrencies = new List<VirtualCurrency>();
-        mNonConsumables = new List<NonConsumableItem>();
+        //mNonConsumables = new List<NonConsumableItem>();
 
 		JToken value;
         if (JObject.TryGetValue(StoreJSONConsts.STORE_CURRENCIES, out value)) {
@@ -388,7 +388,7 @@ public class StoreInfo {
                 }
             }
         }
-
+        /*
         if (JObject.TryGetValue(StoreJSONConsts.STORE_NONCONSUMABLES, out value)) {
             JArray nonConsumables = JObject.Value<JArray>(StoreJSONConsts.STORE_NONCONSUMABLES);
             for (int i=0; i<nonConsumables.Count; i++){
@@ -404,7 +404,7 @@ public class StoreInfo {
                             .getMarketItem().getProductId(), non);
                 }
             }
-        }
+        }*/
     }
 
     /**
@@ -468,11 +468,11 @@ public class StoreInfo {
         foreach (VirtualCategory cat in mCategories){
             categories.Add(cat.toJSONObject());
         }
-
+        /*
         JArray nonConsumableItems = new JArray();
         foreach(NonConsumableItem non in mNonConsumables){
             nonConsumableItems.Add(non.toJSONObject());
-        }
+        }*/
 
         JObject JObject = new JObject();
         try {
@@ -486,7 +486,7 @@ public class StoreInfo {
             JObject.Add(StoreJSONConsts.STORE_CURRENCIES, currencies);
             JObject.Add(StoreJSONConsts.STORE_GOODS, goods);
             JObject.Add(StoreJSONConsts.STORE_CURRENCYPACKS, currencyPacks);
-            JObject.Add(StoreJSONConsts.STORE_NONCONSUMABLES, nonConsumableItems);
+            //JObject.Add(StoreJSONConsts.STORE_NONCONSUMABLES, nonConsumableItems);
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object." + " " + e.Message);
         }
@@ -579,7 +579,7 @@ public class StoreInfo {
             }
             mGoods.Add(vg);
         }
-
+        /*
         if (virtualItem is NonConsumableItem) {
             NonConsumableItem non = (NonConsumableItem) virtualItem;
 
@@ -596,7 +596,7 @@ public class StoreInfo {
                 }
             }
             mNonConsumables.Add(non);
-        }
+        }*/
     }
 
     /**
@@ -616,8 +616,8 @@ public class StoreInfo {
         mGoods.AddRange(storeAssets.GetGoods());
         mCategories = new List<VirtualCategory>();
         mCategories.AddRange(storeAssets.GetCategories());
-        mNonConsumables = new List<NonConsumableItem>();
-        mNonConsumables.AddRange(storeAssets.GetNonConsumableItems());
+        //mNonConsumables = new List<NonConsumableItem>();
+        //mNonConsumables.AddRange(storeAssets.GetNonConsumableItems());
 
         mVirtualItems = new Dictionary<String, VirtualItem>();
         mPurchasableItems = new Dictionary<String, PurchasableVirtualItem>();
@@ -656,7 +656,7 @@ public class StoreInfo {
                         .getProductId(), vi);
             }
         }
-
+        /*
         foreach(NonConsumableItem vi in mNonConsumables) {
             mVirtualItems.Add(vi.getItemId(), vi);
 
@@ -666,7 +666,7 @@ public class StoreInfo {
                         .getProductId(), vi);
             }
         }
-
+        */
         foreach(VirtualCategory category in mCategories) {
             foreach(String goodItemId in category.getGoodsItemIds()) {
                 mGoodsCategories.Add(goodItemId, category);
@@ -728,7 +728,7 @@ public class StoreInfo {
     private static List<VirtualCategory> mCategories;
 
     // list of non consumable items
-    private static List<NonConsumableItem> mNonConsumables;
+    //private static List<NonConsumableItem> mNonConsumables;
 
     private static int mCurrentAssetsVersion = 0;
 }
