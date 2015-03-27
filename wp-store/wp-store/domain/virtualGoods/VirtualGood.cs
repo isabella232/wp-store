@@ -13,11 +13,10 @@
 /// limitations under the License.
 
 using System;
+using SoomlaWpCore.util;
 using SoomlaWpStore.data;
 using SoomlaWpStore.domain;
 using SoomlaWpStore.purchasesTypes;
-using Newtonsoft.Json.Linq;
-
 
 namespace SoomlaWpStore.domain.virtualGoods
 {
@@ -52,13 +51,16 @@ public abstract class VirtualGood : PurchasableVirtualItem {
      * @param jsonObject see parent
      * @throws JSONException
      */
-    public VirtualGood(JObject jsonObject) : base(jsonObject){
+    public VirtualGood(JSONObject jsonObject)
+        : base(jsonObject)
+    {
     }
 
     /**
      * @{inheritDoc}
      */
-    public override JObject toJSONObject(){
+    public override JSONObject toJSONObject()
+    {
         return base.toJSONObject();
     }
 

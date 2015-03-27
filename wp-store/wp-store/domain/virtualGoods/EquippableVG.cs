@@ -14,11 +14,11 @@
 
 using System;
 using SoomlaWpCore;
+using SoomlaWpCore.util;
 using SoomlaWpStore.data;
 using SoomlaWpStore.domain;
 using SoomlaWpStore.purchasesTypes;
 using SoomlaWpStore.exceptions;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 
 /**
@@ -91,10 +91,10 @@ public class EquippableVG : LifetimeVG{
      * @param jsonObject see parent
      * @throws JSONException
      */
-    public EquippableVG(JObject jsonObject) : base(jsonObject) {
+    public EquippableVG(JSONObject jsonObject) : base(jsonObject) {
         
 
-        String equipping = jsonObject.Value<String>(StoreJSONConsts.EQUIPPABLE_EQUIPPING);
+        String equipping = jsonObject[StoreJSONConsts.EQUIPPABLE_EQUIPPING].str;
         if (equipping == EquippingModel.LOCAL.ToString()) {
             mEquippingModel = EquippingModel.LOCAL;
         } else if (equipping == EquippingModel.CATEGORY.ToString()) {
@@ -107,20 +107,13 @@ public class EquippableVG : LifetimeVG{
     /**
      * @{inheritDoc}
      */
-    public override JObject toJSONObject() {
-        JObject parentJsonObject = base.toJSONObject();
-        JObject jsonObject = new JObject();
+    public override JSONObject toJSONObject() {
+        JSONObject jsonObject = base.toJSONObject();
         try {
-            foreach(var childObject in parentJsonObject)
-            {
-				jsonObject.Add(childObject.Key,childObject.Value);
-            }
-            
-            jsonObject.Add(StoreJSONConsts.EQUIPPABLE_EQUIPPING, mEquippingModel.ToString());
+            jsonObject.AddField(StoreJSONConsts.EQUIPPABLE_EQUIPPING, mEquippingModel.ToString());
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object. "+e.Message);
         }
-
         return jsonObject;
     }
 

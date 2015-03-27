@@ -14,10 +14,10 @@
 
 using System;
 using SoomlaWpCore;
+using SoomlaWpCore.util;
 using SoomlaWpStore.data;
 using SoomlaWpStore.purchasesTypes;
 using SoomlaWpStore.exceptions;
-using Newtonsoft.Json.Linq;
 
 /**
  * SingleUsePacks are just bundles of <code>SingleUseVG</code>'s.
@@ -68,27 +68,19 @@ public class SingleUsePackVG : VirtualGood {
      * @param jsonObject see parent
      * @throws JSONException
      */
-    public SingleUsePackVG(JObject jsonObject) : base(jsonObject){
-        mGoodItemId = jsonObject.Value<String>(StoreJSONConsts.VGP_GOOD_ITEMID);
-        mGoodAmount = jsonObject.Value<int>(StoreJSONConsts.VGP_GOOD_AMOUNT);
+    public SingleUsePackVG(JSONObject jsonObject) : base(jsonObject){
+        mGoodItemId = jsonObject[StoreJSONConsts.VGP_GOOD_ITEMID].str;
+        mGoodAmount = (int)jsonObject[StoreJSONConsts.VGP_GOOD_AMOUNT].n;
     }
 
     /**
      * @{inheritDoc}
      */
-    public override JObject toJSONObject() {
-        JObject parentJsonObject = base.toJSONObject();
-        JObject jsonObject = new JObject();
-
-		
+    public override JSONObject toJSONObject() {
+        JSONObject jsonObject = base.toJSONObject();
         try {
-            foreach(var childObject in parentJsonObject)
-			{
-				jsonObject.Add(childObject.Key,childObject.Value);
-			}
-
-            jsonObject.Add(StoreJSONConsts.VGP_GOOD_ITEMID, mGoodItemId);
-            jsonObject.Add(StoreJSONConsts.VGP_GOOD_AMOUNT, mGoodAmount);
+            jsonObject.AddField(StoreJSONConsts.VGP_GOOD_ITEMID, mGoodItemId);
+            jsonObject.AddField(StoreJSONConsts.VGP_GOOD_AMOUNT, mGoodAmount);
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object. "+e.Message);
         }

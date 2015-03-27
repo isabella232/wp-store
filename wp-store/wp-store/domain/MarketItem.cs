@@ -15,9 +15,8 @@
 using System;
 using SoomlaWpCore;
 using SoomlaWpCore.data;
+using SoomlaWpCore.util;
 using SoomlaWpStore.data;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace SoomlaWpStore.domain
 {
@@ -49,15 +48,12 @@ public class MarketItem {
      *                   <code>MarketItem</code>.
      * @throws JSONException
      */
-    public MarketItem(JObject jsonObject){
-
+    public MarketItem(JSONObject jsonObject){
         //MarketItem miDeserialized = Newtonsoft.Json.JsonConvert.DeserializeObject<MarketItem>(jsonObject.ToString());
-        
-        
-        JToken jValue;
-        if (jsonObject.TryGetValue(StoreJSONConsts.MARKETITEM_MANAGED, out jValue)) {
-            SoomlaUtils.LogDebug(TAG,jValue.ToString());
-            if (jValue.Value<int>() == 0)
+        if (jsonObject.HasField(StoreJSONConsts.MARKETITEM_MANAGED)) {
+            int isManaged = (int)jsonObject[StoreJSONConsts.MARKETITEM_MANAGED].n;
+            SoomlaUtils.LogDebug(TAG, isManaged.ToString());
+            if (isManaged == 0)
             {
                 this.mManaged = Managed.MANAGED;
             }
@@ -69,17 +65,17 @@ public class MarketItem {
         } else {
             this.mManaged = Managed.UNMANAGED;
         }
-        if (jsonObject.TryGetValue(StoreJSONConsts.MARKETITEM_PRODUCT_ID, out jValue))
+        if (jsonObject.HasField(StoreJSONConsts.MARKETITEM_PRODUCT_ID))
         {
-            this.mProductId = jsonObject.Value<String>(StoreJSONConsts.MARKETITEM_PRODUCT_ID);
+            this.mProductId = jsonObject[StoreJSONConsts.MARKETITEM_PRODUCT_ID].str;
         } else {
             SoomlaUtils.LogError(TAG, "Market Item No Product ID");
         }
-        this.mPrice = jsonObject.Value<double>(StoreJSONConsts.MARKETITEM_PRICE);
+        this.mPrice = (double)jsonObject[StoreJSONConsts.MARKETITEM_PRICE].n;
 
-        this.mMarketPrice = jsonObject.Value<string>(StoreJSONConsts.MARKETITEM_MARKETPRICE);
-        this.mMarketTitle = jsonObject.Value<string>(StoreJSONConsts.MARKETITEM_MARKETTITLE);
-        this.mMarketDescription = jsonObject.Value<string>(StoreJSONConsts.MARKETITEM_MARKETDESC);
+        this.mMarketPrice = jsonObject[StoreJSONConsts.MARKETITEM_MARKETPRICE].str;
+        this.mMarketTitle = jsonObject[StoreJSONConsts.MARKETITEM_MARKETTITLE].str;
+        this.mMarketDescription = jsonObject[StoreJSONConsts.MARKETITEM_MARKETDESC].str;
         
     }
 
@@ -88,24 +84,24 @@ public class MarketItem {
      *
      * @return A <code>JSONObject</code> representation of the current <code>MarketItem</code>.
      */
-    public JObject toJSONObject(){
-        JObject jsonObject = new JObject();
+    public JSONObject toJSONObject(){
+        JSONObject jsonObject = new JSONObject();
         
         try {
             if (mManaged == Managed.MANAGED)
             {
-                jsonObject.Add(StoreJSONConsts.MARKETITEM_MANAGED, 0);
+                jsonObject.AddField(StoreJSONConsts.MARKETITEM_MANAGED, 0);
             }
             if (mManaged == Managed.UNMANAGED)
             {
-                jsonObject.Add(StoreJSONConsts.MARKETITEM_MANAGED, 1);
+                jsonObject.AddField(StoreJSONConsts.MARKETITEM_MANAGED, 1);
             }
-            jsonObject.Add(StoreJSONConsts.MARKETITEM_PRODUCT_ID, mProductId);
-            jsonObject.Add(StoreJSONConsts.MARKETITEM_PRICE, mPrice);
+            jsonObject.AddField(StoreJSONConsts.MARKETITEM_PRODUCT_ID, mProductId);
+            jsonObject.AddField(StoreJSONConsts.MARKETITEM_PRICE, (float)mPrice);
 
-            jsonObject.Add(StoreJSONConsts.MARKETITEM_MARKETPRICE, mMarketPrice);
-            jsonObject.Add(StoreJSONConsts.MARKETITEM_MARKETTITLE, mMarketTitle);
-            jsonObject.Add(StoreJSONConsts.MARKETITEM_MARKETDESC, mMarketDescription);
+            jsonObject.AddField(StoreJSONConsts.MARKETITEM_MARKETPRICE, mMarketPrice);
+            jsonObject.AddField(StoreJSONConsts.MARKETITEM_MARKETTITLE, mMarketTitle);
+            jsonObject.AddField(StoreJSONConsts.MARKETITEM_MARKETDESC, mMarketDescription);
 
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object.");

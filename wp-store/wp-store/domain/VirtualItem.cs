@@ -18,8 +18,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SoomlaWpCore.data;
+using SoomlaWpCore.util;
 using SoomlaWpCore;
-using Newtonsoft.Json.Linq;
 namespace SoomlaWpStore.domain
 {
     public abstract class VirtualItem : SoomlaEntity
@@ -29,11 +29,11 @@ namespace SoomlaWpStore.domain
 
         }
 
-        public VirtualItem(JObject jsonObject) : base(jsonObject)
+        public VirtualItem(JSONObject jsonObject) : base(jsonObject)
         {
         }
 
-        public virtual new JObject toJSONObject()
+        public virtual new JSONObject toJSONObject()
         {
             return base.toJSONObject();
         }

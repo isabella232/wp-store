@@ -14,11 +14,11 @@
 
 using System;
 using SoomlaWpCore;
+using SoomlaWpCore.util;
 using SoomlaWpStore.data;
 using SoomlaWpStore.domain;
 using SoomlaWpStore.exceptions;
 using SoomlaWpStore.purchasesTypes;
-using Newtonsoft.Json.Linq;
 
 namespace SoomlaWpStore.domain.virtualCurrencies
 {
@@ -63,29 +63,22 @@ public class VirtualCurrencyPack : PurchasableVirtualItem {
      * @param jsonObject see parent
      * @throws JSONException
      */
-    public VirtualCurrencyPack(JObject jsonObject) : base(jsonObject) {
-        this.mCurrencyAmount = jsonObject.Value<int>(StoreJSONConsts.CURRENCYPACK_CURRENCYAMOUNT);
-        this.mCurrencyItemId = jsonObject.Value<String>(StoreJSONConsts.CURRENCYPACK_CURRENCYITEMID);
+    public VirtualCurrencyPack(JSONObject jsonObject) : base(jsonObject) {
+        this.mCurrencyAmount = (int)jsonObject[StoreJSONConsts.CURRENCYPACK_CURRENCYAMOUNT].n;
+        this.mCurrencyItemId = jsonObject[StoreJSONConsts.CURRENCYPACK_CURRENCYITEMID].str;
     }
 
     /**
      * @{inheritDoc}
      */
-    public override JObject toJSONObject(){
-        JObject parentJsonObject = base.toJSONObject();
-        JObject jsonObject = new JObject();
+    public override JSONObject toJSONObject(){
+        JSONObject jsonObject = base.toJSONObject();
         try {
-            jsonObject.Add(StoreJSONConsts.CURRENCYPACK_CURRENCYAMOUNT, mCurrencyAmount);
-            jsonObject.Add(StoreJSONConsts.CURRENCYPACK_CURRENCYITEMID, mCurrencyItemId);
-
-			foreach(var childObject in parentJsonObject)
-            {
-				jsonObject.Add(childObject.Key,childObject.Value);
-            }
+            jsonObject.AddField(StoreJSONConsts.CURRENCYPACK_CURRENCYAMOUNT, mCurrencyAmount);
+            jsonObject.AddField(StoreJSONConsts.CURRENCYPACK_CURRENCYITEMID, mCurrencyItemId);
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object. "+e.Message);
         }
-
         return jsonObject;
     }
 

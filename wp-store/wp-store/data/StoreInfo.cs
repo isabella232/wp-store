@@ -15,13 +15,13 @@
 using System;
 using SoomlaWpCore;
 using SoomlaWpCore.data;
+using SoomlaWpCore.util;
 using SoomlaWpStore;
 using SoomlaWpStore.domain;
 using SoomlaWpStore.domain.virtualGoods;
 using SoomlaWpStore.domain.virtualCurrencies;
 using SoomlaWpStore.exceptions;
 using SoomlaWpStore.purchasesTypes;
-using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 
@@ -93,7 +93,7 @@ public class StoreInfo {
         SoomlaUtils.LogDebug(TAG, "the metadata-economy json (from DB) is " + val);
 
         try {
-            fromJObject(JObject.Parse(val));
+            fromJSONObject(new JSONObject(val,-10));
 
             // everything went well... StoreInfo is initialized from the local DB.
             // it's ok to return now.
@@ -267,12 +267,12 @@ public class StoreInfo {
 
     /** Private functions **/
     /**
-     * Transforms given JObject to StoreInfo
+     * Transforms given JSONObject to StoreInfo
      *
-     * @param JObject
+     * @param JSONObject
      * @throws JSONException
      */
-    private static void fromJObject(JObject JObject) {
+    private static void fromJSONObject(JSONObject JSONObject) {
 
         mVirtualItems = new Dictionary<String, VirtualItem>();
         mPurchasableItems = new Dictionary<String, PurchasableVirtualItem>();
@@ -283,12 +283,10 @@ public class StoreInfo {
         mCategories = new List<VirtualCategory>();
         mCurrencies = new List<VirtualCurrency>();
         //mNonConsumables = new List<NonConsumableItem>();
-
-		JToken value;
-        if (JObject.TryGetValue(StoreJSONConsts.STORE_CURRENCIES, out value)) {
-            JArray virtualCurrencies = JObject.Value<JArray>(StoreJSONConsts.STORE_CURRENCIES);
+        if (JSONObject.HasField(StoreJSONConsts.STORE_CURRENCIES)) {
+            JSONObject virtualCurrencies = JSONObject[StoreJSONConsts.STORE_CURRENCIES];
             for (int i=0; i<virtualCurrencies.Count; i++){
-                JObject o = virtualCurrencies.Value<JObject>(i);
+                JSONObject o = virtualCurrencies[i];
                 VirtualCurrency c = new VirtualCurrency(o);
                 mCurrencies.Add(c);
 
@@ -296,10 +294,10 @@ public class StoreInfo {
             }
         }
 
-        if (JObject.TryGetValue(StoreJSONConsts.STORE_CURRENCYPACKS, out value)) {
-            JArray currencyPacks = JObject.Value<JArray>(StoreJSONConsts.STORE_CURRENCYPACKS);
+        if (JSONObject.HasField(StoreJSONConsts.STORE_CURRENCYPACKS)) {
+            JSONObject currencyPacks = JSONObject[StoreJSONConsts.STORE_CURRENCYPACKS];
             for (int i=0; i<currencyPacks.Count; i++){
-                JObject o = currencyPacks.Value<JObject>(i);
+                JSONObject o = currencyPacks[i];
                 VirtualCurrencyPack pack = new VirtualCurrencyPack(o);
                 mCurrencyPacks.Add(pack);
 
@@ -315,53 +313,51 @@ public class StoreInfo {
 
         // The order in which VirtualGoods are created matters!
         // For example: VGU and VGP depend on other VGs
-        if (JObject.TryGetValue(StoreJSONConsts.STORE_GOODS, out value)) {
-            JObject virtualGoods = JObject.Value<JObject>(StoreJSONConsts.STORE_GOODS);
-
-			JToken valueVg;
-            if (virtualGoods.TryGetValue(StoreJSONConsts.STORE_GOODS_SU, out valueVg)) {
-                JArray suGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_SU);
+        if (JSONObject.HasField(StoreJSONConsts.STORE_GOODS)) {
+            JSONObject virtualGoods = JSONObject[StoreJSONConsts.STORE_GOODS];
+            if (virtualGoods.HasField(StoreJSONConsts.STORE_GOODS_SU)) {
+                JSONObject suGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_SU];
                 for (int i=0; i<suGoods.Count; i++){
-                    JObject o = suGoods.Value<JObject>(i);
+                    JSONObject o = suGoods[i];
                     SingleUseVG g = new SingleUseVG(o);
                     addVG(g);
                 }
             }
 
 
-            if (virtualGoods.TryGetValue(StoreJSONConsts.STORE_GOODS_LT, out valueVg)) {
-                JArray ltGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_LT);
+            if (virtualGoods.HasField(StoreJSONConsts.STORE_GOODS_LT)) {
+                JSONObject ltGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_LT];
                 for (int i=0; i<ltGoods.Count; i++){
-                    JObject o = ltGoods.Value<JObject>(i);
+                    JSONObject o = ltGoods[i];
                     LifetimeVG g = new LifetimeVG(o);
                     addVG(g);
                 }
             }
 
 
-            if (virtualGoods.TryGetValue(StoreJSONConsts.STORE_GOODS_EQ, out valueVg)) {
-                JArray eqGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_EQ);
+            if (virtualGoods.HasField(StoreJSONConsts.STORE_GOODS_EQ)) {
+                JSONObject eqGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_EQ];
                 for (int i=0; i<eqGoods.Count; i++){
-                    JObject o = eqGoods.Value<JObject>(i);
+                    JSONObject o = eqGoods[i];
                     EquippableVG g = new EquippableVG(o);
                     addVG(g);
                 }
             }
 
-            if (virtualGoods.TryGetValue(StoreJSONConsts.STORE_GOODS_PA, out valueVg)) {
-                JArray paGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_PA);
+            if (virtualGoods.HasField(StoreJSONConsts.STORE_GOODS_PA)) {
+                JSONObject paGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_PA];
                 for (int i=0; i<paGoods.Count; i++){
-                    JObject o = paGoods.Value<JObject>(i);
+                    JSONObject o = paGoods[i];
                     SingleUsePackVG g = new SingleUsePackVG(o);
                     addVG(g);
                 }
             }
 
 
-            if (virtualGoods.TryGetValue(StoreJSONConsts.STORE_GOODS_UP, out valueVg)) {
-                JArray upGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_UP);
+            if (virtualGoods.HasField(StoreJSONConsts.STORE_GOODS_UP)) {
+                JSONObject upGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_UP];
                 for (int i=0; i<upGoods.Count; i++){
-                    JObject o = upGoods.Value<JObject>(i);
+                    JSONObject o = upGoods[i];
                     UpgradeVG g = new UpgradeVG(o);
                     addVG(g);
 
@@ -377,10 +373,10 @@ public class StoreInfo {
         }
 
         // Categories depend on virtual goods. That's why the have to be initialized after!
-        if (JObject.TryGetValue(StoreJSONConsts.STORE_CATEGORIES, out value)) {
-            JArray virtualCategories = JObject.Value<JArray>(StoreJSONConsts.STORE_CATEGORIES);
+        if (JSONObject.HasField(StoreJSONConsts.STORE_CATEGORIES)) {
+            JSONObject virtualCategories = JSONObject[StoreJSONConsts.STORE_CATEGORIES];
             for(int i=0; i<virtualCategories.Count; i++){
-                JObject o = virtualCategories.Value<JObject>(i);
+                JSONObject o = virtualCategories[i];
                 VirtualCategory category = new VirtualCategory(o);
                 mCategories.Add(category);
                 foreach(String goodItemId in category.getGoodsItemIds()) {
@@ -389,10 +385,10 @@ public class StoreInfo {
             }
         }
         /*
-        if (JObject.TryGetValue(StoreJSONConsts.STORE_NONCONSUMABLES, out value)) {
-            JArray nonConsumables = JObject.Value<JArray>(StoreJSONConsts.STORE_NONCONSUMABLES);
+        if (JSONObject.TryGetValue(StoreJSONConsts.STORE_NONCONSUMABLES, out value)) {
+            JSONObject nonConsumables = JSONObject.Value<JSONObject>(StoreJSONConsts.STORE_NONCONSUMABLES);
             for (int i=0; i<nonConsumables.Count; i++){
-                JObject o = nonConsumables.Value<JObject>(i);
+                JSONObject o = nonConsumables.Value<JSONObject>(i);
                 NonConsumableItem non = new NonConsumableItem(o);
                 mNonConsumables.Add(non);
 
@@ -427,28 +423,27 @@ public class StoreInfo {
     }
 
     /**
-     * Converts <code>StoreInfo</code> to a <code>JObject</code>.
+     * Converts <code>StoreInfo</code> to a <code>JSONObject</code>.
      *
-     * @return a <code>JObject</code> representation of <code>StoreInfo</code>.
+     * @return a <code>JSONObject</code> representation of <code>StoreInfo</code>.
      */
-    public static JObject toJSONObject(){
+    public static JSONObject toJSONObject(){
 
-        JArray currencies = new JArray();
+        JSONObject currencies = new JSONObject(JSONObject.Type.ARRAY);
         foreach(VirtualCurrency c in mCurrencies){
             currencies.Add(c.toJSONObject());
         }
 
-        JArray currencyPacks = new JArray();
+        JSONObject currencyPacks = new JSONObject(JSONObject.Type.ARRAY);
         foreach(VirtualCurrencyPack pack in mCurrencyPacks){
             currencyPacks.Add(pack.toJSONObject());
         }
 
-        JObject goods = new JObject();
-        JArray suGoods = new JArray();
-        JArray ltGoods = new JArray();
-        JArray eqGoods = new JArray();
-        JArray paGoods = new JArray();
-        JArray upGoods = new JArray();
+        JSONObject suGoods = new JSONObject(JSONObject.Type.ARRAY);
+        JSONObject ltGoods = new JSONObject(JSONObject.Type.ARRAY);
+        JSONObject eqGoods = new JSONObject(JSONObject.Type.ARRAY);
+        JSONObject paGoods = new JSONObject(JSONObject.Type.ARRAY);
+        JSONObject upGoods = new JSONObject(JSONObject.Type.ARRAY);
         foreach(VirtualGood good in mGoods){
             if (good is SingleUseVG) {
                 suGoods.Add(good.toJSONObject());
@@ -464,34 +459,35 @@ public class StoreInfo {
         }
 
 
-        JArray categories = new JArray();
+        JSONObject categories = new JSONObject(JSONObject.Type.ARRAY);
         foreach (VirtualCategory cat in mCategories){
             categories.Add(cat.toJSONObject());
         }
         /*
-        JArray nonConsumableItems = new JArray();
+        JSONObject nonConsumableItems = new JSONObject();
         foreach(NonConsumableItem non in mNonConsumables){
             nonConsumableItems.Add(non.toJSONObject());
         }*/
 
-        JObject JObject = new JObject();
+        JSONObject storeAssetsObj = new JSONObject(JSONObject.Type.OBJECT);
+        JSONObject goods = new JSONObject(JSONObject.Type.OBJECT);
         try {
-            goods.Add(StoreJSONConsts.STORE_GOODS_SU, suGoods);
-            goods.Add(StoreJSONConsts.STORE_GOODS_LT, ltGoods);
-            goods.Add(StoreJSONConsts.STORE_GOODS_EQ, eqGoods);
-            goods.Add(StoreJSONConsts.STORE_GOODS_PA, paGoods);
-            goods.Add(StoreJSONConsts.STORE_GOODS_UP, upGoods);
+            goods.AddField(StoreJSONConsts.STORE_GOODS_SU, suGoods);
+            goods.AddField(StoreJSONConsts.STORE_GOODS_LT, ltGoods);
+            goods.AddField(StoreJSONConsts.STORE_GOODS_EQ, eqGoods);
+            goods.AddField(StoreJSONConsts.STORE_GOODS_PA, paGoods);
+            goods.AddField(StoreJSONConsts.STORE_GOODS_UP, upGoods);
 
-            JObject.Add(StoreJSONConsts.STORE_CATEGORIES, categories);
-            JObject.Add(StoreJSONConsts.STORE_CURRENCIES, currencies);
-            JObject.Add(StoreJSONConsts.STORE_GOODS, goods);
-            JObject.Add(StoreJSONConsts.STORE_CURRENCYPACKS, currencyPacks);
-            //JObject.Add(StoreJSONConsts.STORE_NONCONSUMABLES, nonConsumableItems);
+            storeAssetsObj.AddField(StoreJSONConsts.STORE_CATEGORIES, categories);
+            storeAssetsObj.AddField(StoreJSONConsts.STORE_CURRENCIES, currencies);
+            storeAssetsObj.AddField(StoreJSONConsts.STORE_GOODS, goods);
+            storeAssetsObj.AddField(StoreJSONConsts.STORE_CURRENCYPACKS, currencyPacks);
+            //JSONObject.AddField(StoreJSONConsts.STORE_NONCONSUMABLES, nonConsumableItems);
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object." + " " + e.Message);
         }
 
-        return JObject;
+        return storeAssetsObj;
     }
 
     /**
@@ -679,18 +675,25 @@ public class StoreInfo {
     private static void checkMetadataVersion() {
         IsolatedStorageSettings prefs = IsolatedStorageSettings.ApplicationSettings;
         
-		int mt_ver = 0;
-        prefs.TryGetValue<int>("MT_VER", out mt_ver);
-		int sa_ver_old = -1;
-        prefs.TryGetValue<int>("SA_VER_OLD", out sa_ver_old);
-        
+		int mt_ver = -1;
+        if (prefs.Contains("MT_VER"))
+        {
+            prefs.TryGetValue<int>("MT_VER", out mt_ver);
+        }
+        int sa_ver_old = -1;
+        if (prefs.Contains("SA_VER_OLD"))
+        {
+            prefs.TryGetValue<int>("SA_VER_OLD", out sa_ver_old);
+        }
         if (mt_ver < StoreConfig.METADATA_VERSION || sa_ver_old < mCurrentAssetsVersion) {
 
             prefs.Add("MT_VER", StoreConfig.METADATA_VERSION);
             prefs.Add("SA_VER_OLD", mCurrentAssetsVersion);
             prefs.Save();
-
-            KeyValueStorage.DeleteKeyValue(keyMetaStoreInfo());
+            if (mt_ver > -1)
+            {
+                KeyValueStorage.DeleteKeyValue(keyMetaStoreInfo());
+            }
         }
     }
 

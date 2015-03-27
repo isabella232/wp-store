@@ -15,8 +15,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
 using SoomlaWpCore;
+using SoomlaWpCore.util;
 using SoomlaWpStore.data;
 
 namespace SoomlaWpStore.domain
@@ -45,12 +45,12 @@ public class VirtualCategory {
      * @param jsonObject A JSONObject representation of the wanted <code>VirtualCategory</code>.
      * @throws JSONException
      */
-    public VirtualCategory(JObject jsonObject) {
-        mName = jsonObject.Value<String>(StoreJSONConsts.CATEGORY_NAME);
+    public VirtualCategory(JSONObject jsonObject) {
+        mName = jsonObject[StoreJSONConsts.CATEGORY_NAME].str;
 		
-        JArray goodsArr = jsonObject.Value<JArray>(StoreJSONConsts.CATEGORY_GOODSITEMIDS);
+        JSONObject goodsArr = jsonObject[StoreJSONConsts.CATEGORY_GOODSITEMIDS];
         for(int i=0; i<goodsArr.Count; i++) {
-            String goodItemId = goodsArr.Value<String>(i);
+            String goodItemId = goodsArr[i].str;
             mGoodsItemIds.Add(goodItemId);
         }
     }
@@ -60,17 +60,17 @@ public class VirtualCategory {
      *
      * @return A JSONObject representation of the current <code>VirtualCategory</code>.
      */
-    public JObject toJSONObject(){
-        JObject jsonObject = new JObject();
+    public JSONObject toJSONObject(){
+        JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.Add(StoreJSONConsts.CATEGORY_NAME, mName);
+            jsonObject.AddField(StoreJSONConsts.CATEGORY_NAME, mName);
 
-            JArray goodsArr = new JArray();
+            JSONObject goodsArr = new JSONObject();
             for(int i=0;i<mGoodsItemIds.Count;i++) {
                 goodsArr.Add(mGoodsItemIds[i]);
             }
 
-            jsonObject.Add(StoreJSONConsts.CATEGORY_GOODSITEMIDS, goodsArr);
+            jsonObject.AddField(StoreJSONConsts.CATEGORY_GOODSITEMIDS, goodsArr);
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object." + " " + e.Message);
         }

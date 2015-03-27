@@ -7,7 +7,8 @@ using SoomlaWpStore.domain;
 using SoomlaWpStore.domain.virtualCurrencies;
 using SoomlaWpStore.domain.virtualGoods;
 using SoomlaWpCore;
-using Newtonsoft.Json.Linq;
+using SoomlaWpCore.util;
+
 namespace SoomlaWpStore.data
 {
     /// <summary>   Generic IStoreAssets to build a StoreAssets from a JSON string. </summary>
@@ -37,66 +38,66 @@ namespace SoomlaWpStore.data
                 SoomlaUtils.LogDebug(TAG,"Prepare :\n"+JsonStoreAssets);
                 mVersion = version;
 
-                JObject JObject = JObject.Parse(JsonStoreAssets);
+                JSONObject jSONObject = new JSONObject(JsonStoreAssets,-10);
 
-                JArray virtualCurrencies = JObject.Value<JArray>(StoreJSONConsts.STORE_CURRENCIES);
+                JSONObject virtualCurrencies = jSONObject[StoreJSONConsts.STORE_CURRENCIES];
                 mVirtualCurrency = new VirtualCurrency[virtualCurrencies.Count];
                 for (int i = 0; i < virtualCurrencies.Count; i++)
                 {
-                    JObject o = virtualCurrencies.Value<JObject>(i);
+                    JSONObject o = virtualCurrencies[i];
                     VirtualCurrency c = new VirtualCurrency(o);
                     mVirtualCurrency[i] = c;
                 }
 
-                JArray currencyPacks = JObject.Value<JArray>(StoreJSONConsts.STORE_CURRENCYPACKS);
+                JSONObject currencyPacks = jSONObject[StoreJSONConsts.STORE_CURRENCYPACKS];
                 mVirtualCurrencyPack = new VirtualCurrencyPack[currencyPacks.Count];
                 for (int i = 0; i < currencyPacks.Count; i++)
                 {
-                    JObject o = currencyPacks.Value<JObject>(i);
+                    JSONObject o = currencyPacks[i];
                     VirtualCurrencyPack pack = new VirtualCurrencyPack(o);
                     mVirtualCurrencyPack[i] = pack;
                 }
 
                 // The order in which VirtualGoods are created matters!
                 // For example: VGU and VGP depend on other VGs
-                JObject virtualGoods = JObject.Value<JObject>(StoreJSONConsts.STORE_GOODS);
-                JArray suGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_SU);
-                JArray ltGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_LT);
-                JArray eqGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_EQ);
-                JArray upGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_UP);
-                JArray paGoods = virtualGoods.Value<JArray>(StoreJSONConsts.STORE_GOODS_PA);
+                JSONObject virtualGoods = jSONObject[StoreJSONConsts.STORE_GOODS];
+                JSONObject suGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_SU];
+                JSONObject ltGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_LT];
+                JSONObject eqGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_EQ];
+                JSONObject upGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_UP];
+                JSONObject paGoods = virtualGoods[StoreJSONConsts.STORE_GOODS_PA];
                 List<VirtualGood> goods = new List<VirtualGood>();
                 for (int i = 0; i < suGoods.Count; i++)
                 {
-                    JObject o = suGoods.Value<JObject>(i);
+                    JSONObject o = suGoods[i];
                     SingleUseVG g = new SingleUseVG(o);
                     SoomlaUtils.LogDebug(TAG, "SingleUseVG " + g.getItemId());
                     goods.Add(g);
                 }
                 for (int i = 0; i < ltGoods.Count; i++)
                 {
-                    JObject o = ltGoods.Value<JObject>(i);
+                    JSONObject o = ltGoods[i];
                     LifetimeVG g = new LifetimeVG(o);
                     SoomlaUtils.LogDebug(TAG, "LifetimeVG " + g.getItemId());
                     goods.Add(g);
                 }
                 for (int i = 0; i < eqGoods.Count; i++)
                 {
-                    JObject o = eqGoods.Value<JObject>(i);
+                    JSONObject o = eqGoods[i];
                     EquippableVG g = new EquippableVG(o);
                     SoomlaUtils.LogDebug(TAG, "EquippableVG " + g.getItemId());
                     goods.Add(g);
                 }
                 for (int i = 0; i < paGoods.Count; i++)
                 {
-                    JObject o = paGoods.Value<JObject>(i);
+                    JSONObject o = paGoods[i];
                     SingleUsePackVG g = new SingleUsePackVG(o);
                     SoomlaUtils.LogDebug(TAG, "SingleUsePackVG " + g.getItemId());
                     goods.Add(g);
                 }
                 for (int i = 0; i < upGoods.Count; i++)
                 {
-                    JObject o = upGoods.Value<JObject>(i);
+                    JSONObject o = upGoods[i];
                     UpgradeVG g = new UpgradeVG(o);
                     SoomlaUtils.LogDebug(TAG, "UpgradeVG " + g.getItemId());
                     goods.Add(g);
@@ -110,20 +111,20 @@ namespace SoomlaWpStore.data
                 }
 
                 // categories depend on virtual goods. That's why the have to be initialized after!
-                JArray virtualCategories = JObject.Value<JArray>(StoreJSONConsts.STORE_CATEGORIES);
+                JSONObject virtualCategories = jSONObject[StoreJSONConsts.STORE_CATEGORIES];
                 mVirtualCategory = new VirtualCategory[virtualCategories.Count];
                 for (int i = 0; i < virtualCategories.Count; i++)
                 {
-                    JObject o = virtualCategories.Value<JObject>(i);
+                    JSONObject o = virtualCategories[i];
                     VirtualCategory category = new VirtualCategory(o);
                     mVirtualCategory[i] = category;
                 }
                 /*
-                JArray nonConsumables = JObject.Value<JArray>(StoreJSONConsts.STORE_NONCONSUMABLES);
+                JArray nonConsumables = JSONObject.Value<JArray>(StoreJSONConsts.STORE_NONCONSUMABLES);
                 mNonConsumableItem = new NonConsumableItem[nonConsumables.Count];
                 for (int i = 0; i < nonConsumables.Count; i++)
                 {
-                    JObject o = nonConsumables.Value<JObject>(i);
+                    JSONObject o = nonConsumables.Value<JSONObject>(i);
                     NonConsumableItem non = new NonConsumableItem(o);
                     mNonConsumableItem[i] = non;
                 }

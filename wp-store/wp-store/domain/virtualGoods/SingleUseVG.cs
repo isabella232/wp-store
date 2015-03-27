@@ -15,7 +15,7 @@
 using System;
 using SoomlaWpStore.data;
 using SoomlaWpStore.purchasesTypes;
-using Newtonsoft.Json.Linq;
+using SoomlaWpCore.util;
 
 /**
  * Single use virtual goods are the most common type of <code>VirtualGood</code>.
@@ -58,14 +58,14 @@ public class SingleUseVG : VirtualGood{
      * @param jsonObject see parent
      * @throws JSONException
      */
-    public SingleUseVG(JObject jsonObject) : base(jsonObject) {
+    public SingleUseVG(JSONObject jsonObject) : base(jsonObject) {
         
     }
 
     /**
      * @{inheritDoc}
      */
-    public override JObject toJSONObject() {
+    public override JSONObject toJSONObject() {
         return base.toJSONObject();
     }
 

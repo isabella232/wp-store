@@ -14,10 +14,10 @@
 
 using System;
 using SoomlaWpCore;
+using SoomlaWpCore.util;
 using SoomlaWpStore.data;
 using SoomlaWpStore.exceptions;
 using SoomlaWpStore.purchasesTypes;
-using Newtonsoft.Json.Linq;
 
 namespace SoomlaWpStore.domain
 {
@@ -44,19 +44,19 @@ public abstract class PurchasableVirtualItem : VirtualItem {
     /// Initializes a new instance of the <see cref="PurchasableVirtualItem"/> class.
     /// </summary>
     /// <param name="jsonObject">The json object.</param>
-    public PurchasableVirtualItem(JObject jsonObject) : base(jsonObject){
+    public PurchasableVirtualItem(JSONObject jsonObject) : base(jsonObject){
         
-        JObject purchasableObj = jsonObject.Value<JObject>(StoreJSONConsts.PURCHASABLE_ITEM);
-        String purchaseType = purchasableObj.Value<String>(StoreJSONConsts.PURCHASE_TYPE);
+        JSONObject purchasableObj = jsonObject[StoreJSONConsts.PURCHASABLE_ITEM];
+        String purchaseType = purchasableObj[StoreJSONConsts.PURCHASE_TYPE].str;
 
         if (purchaseType == StoreJSONConsts.PURCHASE_TYPE_MARKET) {
-            JObject marketItemObj =
-                    purchasableObj.Value<JObject>(StoreJSONConsts.PURCHASE_MARKET_ITEM);
+            JSONObject marketItemObj =
+                    purchasableObj[StoreJSONConsts.PURCHASE_MARKET_ITEM];
 
             mPurchaseType = new PurchaseWithMarket(new MarketItem(marketItemObj));
         } else if (purchaseType == StoreJSONConsts.PURCHASE_TYPE_VI) {
-            String itemId = purchasableObj.Value<String>(StoreJSONConsts.PURCHASE_VI_ITEMID);
-            int amount = purchasableObj.Value<int>(StoreJSONConsts.PURCHASE_VI_AMOUNT);
+            String itemId = purchasableObj[StoreJSONConsts.PURCHASE_VI_ITEMID].str;
+            int amount = (int)purchasableObj[StoreJSONConsts.PURCHASE_VI_AMOUNT].n;
 
             mPurchaseType = new PurchaseWithVirtualItem(itemId, amount);
         } else {
@@ -71,34 +71,25 @@ public abstract class PurchasableVirtualItem : VirtualItem {
     /**
      * @{inheritDoc}
      */
-    public override JObject toJSONObject(){
-        JObject parentJsonObject = base.toJSONObject();
-        JObject jsonObject = new JObject();
+    public override JSONObject toJSONObject(){
+        JSONObject jsonObject = base.toJSONObject();
         try {
-            foreach(var entry in parentJsonObject)
-            {
-				jsonObject.Add(entry.Key,entry.Value);
-            }
-
-            JObject purchasableObj = new JObject();
-
+            JSONObject purchasableObj = new JSONObject();
             if(mPurchaseType is PurchaseWithMarket) {
-                purchasableObj.Add(StoreJSONConsts.PURCHASE_TYPE, StoreJSONConsts.PURCHASE_TYPE_MARKET);
+                purchasableObj.AddField(StoreJSONConsts.PURCHASE_TYPE, StoreJSONConsts.PURCHASE_TYPE_MARKET);
 
                 MarketItem mi = ((PurchaseWithMarket) mPurchaseType).getMarketItem();
-                purchasableObj.Add(StoreJSONConsts.PURCHASE_MARKET_ITEM, mi.toJSONObject());
+                purchasableObj.AddField(StoreJSONConsts.PURCHASE_MARKET_ITEM, mi.toJSONObject());
             } else if(mPurchaseType is PurchaseWithVirtualItem) {
-                purchasableObj.Add(StoreJSONConsts.PURCHASE_TYPE, StoreJSONConsts.PURCHASE_TYPE_VI);
+                purchasableObj.AddField(StoreJSONConsts.PURCHASE_TYPE, StoreJSONConsts.PURCHASE_TYPE_VI);
 
-                purchasableObj.Add(StoreJSONConsts.PURCHASE_VI_ITEMID,((PurchaseWithVirtualItem)mPurchaseType).getTargetItemId());
-                purchasableObj.Add(StoreJSONConsts.PURCHASE_VI_AMOUNT,((PurchaseWithVirtualItem) mPurchaseType).getAmount());
+                purchasableObj.AddField(StoreJSONConsts.PURCHASE_VI_ITEMID, ((PurchaseWithVirtualItem)mPurchaseType).getTargetItemId());
+                purchasableObj.AddField(StoreJSONConsts.PURCHASE_VI_AMOUNT, ((PurchaseWithVirtualItem)mPurchaseType).getAmount());
             }
-
-            jsonObject.Add(StoreJSONConsts.PURCHASABLE_ITEM, purchasableObj);
+            jsonObject.AddField(StoreJSONConsts.PURCHASABLE_ITEM, purchasableObj);
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object." + " " + e.Message);
         }
-
         return jsonObject;
     }
 

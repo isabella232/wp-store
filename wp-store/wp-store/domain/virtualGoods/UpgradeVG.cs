@@ -15,23 +15,9 @@
 using System;
 using SoomlaWpCore;
 using SoomlaWpStore.data;
+using SoomlaWpCore.util;
 using SoomlaWpStore.exceptions;
 using SoomlaWpStore.purchasesTypes;
-using Newtonsoft.Json.Linq;
-
-/*
-import android.text.TextUtils;
-import com.soomla.SoomlaUtils;
-import com.soomla.store.data.StoreJSONConsts;
-import com.soomla.store.data.StorageManager;
-import com.soomla.store.data.StoreInfo;
-import com.soomla.store.exceptions.VirtualItemNotFoundException;
-import com.soomla.store.purchaseTypes.PurchaseType;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.Iterator;
-*/
 
 /**
  * An upgrade virtual good is one VG in a series of VGs that define an upgrade scale of an
@@ -94,30 +80,23 @@ public class UpgradeVG : LifetimeVG {
      * @param jsonObject see parent
      * @throws JSONException
      */
-    public UpgradeVG(JObject jsonObject) : base(jsonObject) {
+    public UpgradeVG(JSONObject jsonObject) : base(jsonObject) {
 
-        mGoodItemId = jsonObject.Value<String>(StoreJSONConsts.VGU_GOOD_ITEMID);
-        mPrevItemId = jsonObject.Value<String>(StoreJSONConsts.VGU_PREV_ITEMID);
-        mNextItemId = jsonObject.Value<String>(StoreJSONConsts.VGU_NEXT_ITEMID);
+        mGoodItemId = jsonObject[StoreJSONConsts.VGU_GOOD_ITEMID].str;
+        mPrevItemId = jsonObject[StoreJSONConsts.VGU_PREV_ITEMID].str;
+        mNextItemId = jsonObject[StoreJSONConsts.VGU_NEXT_ITEMID].str;
     }
 
     /**
      * @{inheritDoc}
      */
-    public override JObject toJSONObject(){
-        JObject parentJsonObject = base.toJSONObject();
-        JObject jsonObject = new JObject();
+    public override JSONObject toJSONObject(){
+        JSONObject jsonObject = base.toJSONObject();
         try {
-            
-            foreach(var childObject in parentJsonObject)
-            {
-				jsonObject.Add(childObject.Key, childObject.Value);
-            }
-
-            jsonObject.Add(StoreJSONConsts.VGU_GOOD_ITEMID, mGoodItemId);
-            jsonObject.Add(StoreJSONConsts.VGU_PREV_ITEMID, String.IsNullOrEmpty(mPrevItemId) ? ""
+            jsonObject.AddField(StoreJSONConsts.VGU_GOOD_ITEMID, mGoodItemId);
+            jsonObject.AddField(StoreJSONConsts.VGU_PREV_ITEMID, String.IsNullOrEmpty(mPrevItemId) ? ""
                     : mPrevItemId);
-            jsonObject.Add(StoreJSONConsts.VGU_NEXT_ITEMID, String.IsNullOrEmpty(mNextItemId) ? ""
+            jsonObject.AddField(StoreJSONConsts.VGU_NEXT_ITEMID, String.IsNullOrEmpty(mNextItemId) ? ""
                     : mNextItemId);
         } catch (Exception e) {
             SoomlaUtils.LogError(TAG, "An error occurred while generating JSON object." + " " + e.Message);
