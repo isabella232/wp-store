@@ -25,7 +25,7 @@ namespace SoomlaWpStore.exceptions
      * Real Game Example:
      *  Example Inventory: { currency_coin: 100, robot_character: 3 }
      *  Suppose that your user would like to equip (LOCAL) a robot_character.
-     *  You'll probably call <code>equipVirtualGood("robot_character")</code>.
+     *  You'll probably call <code>EquipVirtualGood("robot_character")</code>.
      *  <code>NotEnoughGoodException</code> will be thrown with "robot_character" as the itemId.
      *  You can catch this exception in order to notify the user that he/she doesn't
      *  own a robot_character (so he/she cannot equip it!).

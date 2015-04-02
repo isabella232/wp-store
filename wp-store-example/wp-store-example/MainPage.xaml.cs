@@ -24,6 +24,7 @@ using Microsoft.Phone.Shell;
 using wp_store_example.Resources;
 using SoomlaWpStore;
 using SoomlaWpCore;
+using SoomlaWpCore.rewards;
 using SoomlaWpStore.data;
 using SoomlaWpStore.domain;
 using SoomlaWpStore.domain.virtualGoods;
@@ -53,6 +54,23 @@ namespace wp_store_example
             /// Update the currencies balance on the GUI
             UpdateCurrencyBalance(null, 0,0);
             buildShop();
+
+            VirtualItemReward reward = new VirtualItemReward("firstTimeLaunch", "First Time Launch", StoreAssets.WEAK_CURRENCY_ITEM_ID, 1000);
+            if (!reward.Owned)
+            {
+                reward.Give();
+            }
+
+            //Query test
+            /*
+            List<SoomlaWpCore.data.KeyValue> kv = new SoomlaWpCore.data.KeyValDatabase().GetQueryVals("*u6f8*");
+            string test = new SoomlaWpCore.data.KeyValDatabase().GetQueryOne("*u6f8*");
+            string test2 = new SoomlaWpCore.data.KeyValDatabase().GetQueryOne("*");
+            int count = new SoomlaWpCore.data.KeyValDatabase().GetQueryCount("*");
+            List<SoomlaWpCore.data.KeyValue> kv2 = new SoomlaWpCore.data.KeyValDatabase().GetAllKeys();
+            List<SoomlaWpCore.data.KeyValue> kv3 = SoomlaWpCore.data.KeyValueStorage.GetNonEncryptedQueryValues("*");
+            List<SoomlaWpCore.data.KeyValue> kv4 = SoomlaWpCore.data.KeyValueStorage.GetEncryptedKeys();
+            */
         }
 
         private void buildShop()
@@ -90,7 +108,7 @@ namespace wp_store_example
             stackP.Children.Add(buttonStack);
             stackP.Children.Add(textStack);
 
-            if (item is LifetimeVG && StoreInventory.getVirtualItemBalance(item.getItemId()) > 0)
+            if (item is LifetimeVG && StoreInventory.GetVirtualItemBalance(item.getItemId()) > 0)
             {
                 //LifeTimeVG already buyed
             }
@@ -116,7 +134,7 @@ namespace wp_store_example
                 equip.HorizontalAlignment = System.Windows.HorizontalAlignment.Left;
                 equip.VerticalAlignment = System.Windows.VerticalAlignment.Center;
                 EquippableVG evg = (EquippableVG)item;
-                if (StoreInventory.isVirtualGoodEquipped(item.getItemId()))
+                if (StoreInventory.IsVirtualGoodEquipped(item.getItemId()))
                 {
                     equip.Content = "unequip";
                     equip.Click += unequipItem;
@@ -134,7 +152,7 @@ namespace wp_store_example
             balance.Margin = new Thickness(0,0,10,0);
             if (!(item is VirtualCurrencyPack))
             {
-                balance.Text = "balance: "+StoreInventory.getVirtualItemBalance(item.getItemId()).ToString();
+                balance.Text = "balance: "+StoreInventory.GetVirtualItemBalance(item.getItemId()).ToString();
             }
             balance.Name = item.getItemId() + "balance";
             textStack.Children.Add(balance);
@@ -192,7 +210,7 @@ namespace wp_store_example
             Button buyButton = (Button)sender;
             try
             {
-                StoreInventory.buy(buyButton.CommandParameter.ToString(), null);
+                StoreInventory.Buy(buyButton.CommandParameter.ToString(), null);
             }
             catch (InsufficientFundsException ex)
             {
@@ -206,7 +224,7 @@ namespace wp_store_example
             Button equipButton = (Button)sender;
             try
             {
-                StoreInventory.equipVirtualGood(equipButton.CommandParameter.ToString());
+                StoreInventory.EquipVirtualGood(equipButton.CommandParameter.ToString());
             }
             catch (NotEnoughGoodsException ex)
             {
@@ -217,7 +235,7 @@ namespace wp_store_example
         private void unequipItem(object sender, RoutedEventArgs e)
         {
             Button equipButton = (Button)sender;
-            StoreInventory.unEquipVirtualGood(equipButton.CommandParameter.ToString());
+            StoreInventory.UnEquipVirtualGood(equipButton.CommandParameter.ToString());
         }
 
         private void UpdateGoodEquip(EquippableVG good)
@@ -244,18 +262,18 @@ namespace wp_store_example
 
         private void UpdateCurrencyBalance(VirtualCurrency currency, int balance, int amountAdded)
         {
-            WeakCurrency.Text = StoreInventory.getVirtualItemBalance(StoreAssets.WEAK_CURRENCY_ITEM_ID).ToString();
-            StrongCurrency.Text = StoreInventory.getVirtualItemBalance(StoreAssets.STRONG_CURRENCY_ITEM_ID).ToString();
+            WeakCurrency.Text = StoreInventory.GetVirtualItemBalance(StoreAssets.WEAK_CURRENCY_ITEM_ID).ToString();
+            StrongCurrency.Text = StoreInventory.GetVirtualItemBalance(StoreAssets.STRONG_CURRENCY_ITEM_ID).ToString();
         }
 
         private void Give1000Weak(object sender, RoutedEventArgs e)
         {
-            StoreInventory.giveVirtualItem(StoreAssets.WEAK_CURRENCY_ITEM_ID,1000);
+            StoreInventory.GiveItem(StoreAssets.WEAK_CURRENCY_ITEM_ID,1000);
 
         }
         private void Give100Strong(object sender, RoutedEventArgs e)
         {
-            StoreInventory.giveVirtualItem(StoreAssets.STRONG_CURRENCY_ITEM_ID, 100);
+            StoreInventory.GiveItem(StoreAssets.STRONG_CURRENCY_ITEM_ID, 100);
         }
 
         // Exemple de code pour la conception d'une ApplicationBar localisée

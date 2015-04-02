@@ -77,12 +77,10 @@ public abstract class PurchasableVirtualItem : VirtualItem {
             JSONObject purchasableObj = new JSONObject();
             if(mPurchaseType is PurchaseWithMarket) {
                 purchasableObj.AddField(StoreJSONConsts.PURCHASE_TYPE, StoreJSONConsts.PURCHASE_TYPE_MARKET);
-
                 MarketItem mi = ((PurchaseWithMarket) mPurchaseType).getMarketItem();
                 purchasableObj.AddField(StoreJSONConsts.PURCHASE_MARKET_ITEM, mi.toJSONObject());
             } else if(mPurchaseType is PurchaseWithVirtualItem) {
                 purchasableObj.AddField(StoreJSONConsts.PURCHASE_TYPE, StoreJSONConsts.PURCHASE_TYPE_VI);
-
                 purchasableObj.AddField(StoreJSONConsts.PURCHASE_VI_ITEMID, ((PurchaseWithVirtualItem)mPurchaseType).getTargetItemId());
                 purchasableObj.AddField(StoreJSONConsts.PURCHASE_VI_AMOUNT, ((PurchaseWithVirtualItem)mPurchaseType).getAmount());
             }

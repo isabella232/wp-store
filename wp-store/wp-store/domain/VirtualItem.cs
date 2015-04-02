@@ -22,7 +22,7 @@ using SoomlaWpCore.util;
 using SoomlaWpCore;
 namespace SoomlaWpStore.domain
 {
-    public abstract class VirtualItem : SoomlaEntity
+    public abstract class VirtualItem : SoomlaEntity<VirtualItem>
     {
         public VirtualItem(String Name, String Description, String ItemId) : base(Name, Description, ItemId)
         {
@@ -32,11 +32,11 @@ namespace SoomlaWpStore.domain
         public VirtualItem(JSONObject jsonObject) : base(jsonObject)
         {
         }
-
-        public virtual new JSONObject toJSONObject()
+        
+        /*public new JSONObject toJSONObject()
         {
             return base.toJSONObject();
-        }
+        }*/
 
         public int give(int amount)
         {
