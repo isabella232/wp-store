@@ -19,6 +19,8 @@ using SoomlaWpStore.domain;
 using SoomlaWpStore.domain.virtualGoods;
 using SoomlaWpStore;
 using SoomlaWpStore.exceptions;
+using SoomlaWpCore.util;
+using SoomlaWpStore.events;
 
 namespace SoomlaWpStore.data 
 {
@@ -60,7 +62,7 @@ public class VirtualGoodsStorage : VirtualItemStorage{
         KeyValueStorage.DeleteKeyValue(key);
 
         if (notify) {
-			StoreEvents.GetInstance().PostGoodUpgradeEvent(good,null);
+            BusProvider.Instance.Post(new GoodUpgradeEvent(good, null));
         }
     }
 
@@ -96,7 +98,7 @@ public class VirtualGoodsStorage : VirtualItemStorage{
         KeyValueStorage.SetValue(key, upItemId);
 
         if (notify) {
-			StoreEvents.GetInstance().PostGoodUpgradeEvent(good,upgradeVG);
+            BusProvider.Instance.Post(new GoodUpgradeEvent(good, upgradeVG));
         }
     }
 
@@ -205,7 +207,7 @@ public class VirtualGoodsStorage : VirtualItemStorage{
      * @{inheritDoc}
      */
     protected override void postBalanceChangeEvent(VirtualItem item, int balance, int amountAdded) {
-        StoreEvents.GetInstance().PostGoodBalanceChangedEvent((VirtualGood)item,balance, amountAdded);
+        BusProvider.Instance.Post(new GoodBalanceChangedEvent((VirtualGood)item,balance, amountAdded));
     }
 
     /**
@@ -220,28 +222,29 @@ public class VirtualGoodsStorage : VirtualItemStorage{
         if (equip) {
             KeyValueStorage.SetValue(key, "");
             if (notify) {
-                StoreEvents.GetInstance().PostGoodEquippedEvent(good);
+                BusProvider.Instance.Post(new GoodEquippedEvent(good));
             }
         } else {
             KeyValueStorage.DeleteKeyValue(key);
             if (notify) {
-                StoreEvents.GetInstance().PostGoodUnEquippedEvent(good);
+                BusProvider.Instance.Post(new GoodUnEquippedEvent(good));
             }
         }
     }
 
 
     private static String keyGoodBalance(String itemId) {
-        return "good." + itemId + ".balance";
+        return DB_KEY_GOOD_PREFIX + itemId + ".balance";
     }
 
     private static String keyGoodEquipped(String itemId) {
-        return "good." + itemId + ".equipped";
+        return DB_KEY_GOOD_PREFIX + itemId + ".equipped";
     }
 
     private static String keyGoodUpgrade(String itemId) {
-        return "good." + itemId + ".currentUpgrade";
+        return DB_KEY_GOOD_PREFIX + itemId + ".currentUpgrade";
     }
 
+    public const String DB_KEY_GOOD_PREFIX = "good.";
 }
 }

@@ -5,7 +5,7 @@
     <Description>A sample product listing</Description>
     <ProductId>noads</ProductId>
     <ProductType>Durable</ProductType>
-    <FormattedPrice>$1.00</FormattedPrice>
+    <FormattedPrice>1,00€</FormattedPrice>
     <ImageUri></ImageUri>
     <Keywords>test;product</Keywords>
     <Tag>Additional text</Tag>
@@ -15,7 +15,7 @@
     <Description>A sample product listing</Description>
     <ProductId>strongpack1</ProductId>
     <ProductType>Consumable</ProductType>
-    <FormattedPrice>$1.00</FormattedPrice>
+    <FormattedPrice>1,49€</FormattedPrice>
     <ImageUri></ImageUri>
     <Keywords>test;product</Keywords>
     <Tag>Additional text</Tag>
@@ -25,7 +25,7 @@
     <Description>A sample product listing</Description>
     <ProductId>strongpack2</ProductId>
     <ProductType>Consumable</ProductType>
-    <FormattedPrice>$3.00</FormattedPrice>
+    <FormattedPrice>3,00€</FormattedPrice>
     <ImageUri></ImageUri>
     <Keywords>test;product</Keywords>
     <Tag>Additional text</Tag>
@@ -35,7 +35,7 @@
     <Description>A sample product listing</Description>
     <ProductId>strongpack3</ProductId>
     <ProductType>Consumable</ProductType>
-    <FormattedPrice>$6.00</FormattedPrice>
+    <FormattedPrice>6,00€</FormattedPrice>
     <ImageUri></ImageUri>
     <Keywords>test;product</Keywords>
     <Tag>Additional text</Tag>

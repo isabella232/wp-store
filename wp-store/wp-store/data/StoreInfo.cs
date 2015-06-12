@@ -138,6 +138,7 @@ public class StoreInfo {
         }
         catch (KeyNotFoundException e)
         {
+            SoomlaUtils.LogDebug(TAG, e.Message);
             throw new VirtualItemNotFoundException("itemId", itemId);
         }
         return item;
@@ -161,6 +162,7 @@ public class StoreInfo {
         }
         catch(KeyNotFoundException e)
         {
+            SoomlaUtils.LogDebug(TAG, e.Message);
             throw new VirtualItemNotFoundException("productId", productId);
         }
 
@@ -183,6 +185,7 @@ public class StoreInfo {
         }
         catch (KeyNotFoundException e)
         {
+            SoomlaUtils.LogDebug(TAG,e.Message);
             throw new VirtualItemNotFoundException("goodItemId", goodItemId);
         }
         return item;
@@ -705,6 +708,7 @@ public class StoreInfo {
     }
 
     private const String TAG = "SOOMLA StoreInfo"; //used for Log messages
+    public const String DB_NONCONSUMABLE_KEY_PREFIX = "nonconsumable.";
 
     // convenient hash of virtual items
     private static Dictionary<String, VirtualItem> mVirtualItems;

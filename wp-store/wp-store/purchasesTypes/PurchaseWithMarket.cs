@@ -15,6 +15,8 @@
 using System;
 using SoomlaWpCore;
 using SoomlaWpStore.domain;
+using SoomlaWpCore.util;
+using SoomlaWpStore.events;
 
 namespace SoomlaWpStore.purchasesTypes
 {
@@ -56,9 +58,8 @@ public class PurchaseWithMarket : PurchaseType {
     public override void buy(String payload) {
         SoomlaUtils.LogDebug(TAG, "Starting in-app purchase for productId: "
                 + mMarketItem.getProductId());
-        
-        
-        StoreEvents.GetInstance().PostItemPurchaseStartedEvent(getAssociatedItem());
+
+        BusProvider.Instance.Post(new ItemPurchaseStartedEvent(getAssociatedItem()));
         
         try {
             SoomlaStore.GetInstance().buyWithMarket(mMarketItem, payload);

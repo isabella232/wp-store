@@ -19,7 +19,8 @@ using SoomlaWpStore.data;
 using SoomlaWpStore.domain;
 using SoomlaWpStore.exceptions;
 using System.Diagnostics;
-
+using SoomlaWpCore.util;
+using SoomlaWpStore.events;
 namespace SoomlaWpStore.purchasesTypes
 {
 /**
@@ -61,7 +62,7 @@ public class PurchaseWithVirtualItem : PurchaseType {
             return;
         }
 
-		StoreEvents.GetInstance().PostItemPurchaseStartedEvent(getAssociatedItem());
+        BusProvider.Instance.Post(new ItemPurchaseStartedEvent(getAssociatedItem()));
 
         VirtualItemStorage storage = StorageManager.getVirtualItemStorage(item);
 
@@ -75,7 +76,7 @@ public class PurchaseWithVirtualItem : PurchaseType {
 
         getAssociatedItem().give(1);
         //BusProvider.getInstance().post(new OnItemPurchasedEvent(getAssociatedItem(), payload));
-		StoreEvents.GetInstance().PostItemPurchasedEvent(getAssociatedItem(), payload);
+        BusProvider.Instance.Post(new ItemPurchasedEvent(getAssociatedItem(), payload));
     }
 
 
