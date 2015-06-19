@@ -15,7 +15,8 @@
 using System;
 using SoomlaWpStore.domain;
 using SoomlaWpStore.domain.virtualCurrencies;
-
+using SoomlaWpCore.util;
+using SoomlaWpStore.events;
 
 /**
  * This class provides basic storage operations on virtual currencies.
@@ -42,11 +43,13 @@ public class VirtualCurrencyStorage : VirtualItemStorage{
      * @{inheritDoc}
      */
     protected override void postBalanceChangeEvent(VirtualItem item, int balance, int amountAdded) {
-		StoreEvents.GetInstance().PostCurrencyBalanceChangedEvent((VirtualCurrency) item,balance, amountAdded);
+        BusProvider.Instance.Post(new CurrencyBalanceChangedEvent((VirtualCurrency) item,balance, amountAdded));
     }
 
     private static String keyCurrencyBalance(String itemId) {
-        return "currency." + itemId + ".balance";
+        return DB_CURRENCY_KEY_PREFIX + itemId + ".balance";
     }
+
+    public const String DB_CURRENCY_KEY_PREFIX = "currency.";
 }
 }

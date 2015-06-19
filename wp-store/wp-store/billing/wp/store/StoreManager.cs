@@ -18,7 +18,8 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Xml.Linq;
 using SoomlaWpCore;
-
+using SoomlaWpCore.util;
+using SoomlaWpStore.events;
 
 
 using MockIAPLib;
@@ -67,7 +68,7 @@ namespace SoomlaWpStore.billing.wp.store
         /// <summary>   Loads Windows Store IAP informations. </summary>
         public async void LoadListingInfo()
         {
-            StoreEvents.GetInstance().PostMarketItemsRefreshStartedEvent();
+            BusProvider.Instance.Post(new MarketItemsRefreshStartedEvent());
             try
             {
 
@@ -88,7 +89,7 @@ namespace SoomlaWpStore.billing.wp.store
                             marketProduct.ImageUri = pair.Value.ImageUri;
                             marketProduct.Keywords = pair.Value.Keywords;
                             marketProduct.ProductId = pair.Value.ProductId;
-
+                            
                             switch (pair.Value.ProductType)
                             {
                                 case Windows.ApplicationModel.Store.ProductType.Consumable:

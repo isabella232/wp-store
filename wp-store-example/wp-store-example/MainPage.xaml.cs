@@ -31,6 +31,8 @@ using SoomlaWpStore.domain.virtualGoods;
 using SoomlaWpStore.domain.virtualCurrencies;
 using SoomlaWpStore.purchasesTypes;
 using SoomlaWpStore.exceptions;
+using SoomlaWpStore.events;
+using SoomlaWpCore.util;
 
 namespace wp_store_example
 {
@@ -40,10 +42,13 @@ namespace wp_store_example
         public MainPage()
         {
             InitializeComponent();
+            /*
             StoreEvents.GetInstance().OnCurrencyBalanceChangedEvent += new CurrencyBalanceChangedEventHandler(UpdateCurrencyBalance);
             StoreEvents.GetInstance().OnGoodBalanceChangedEvent += new GoodBalanceChangedEventHandler(UpdateGoodBalance);
             StoreEvents.GetInstance().OnGoodEquippedEvent += new GoodEquippedEventHandler(UpdateGoodEquip);
             StoreEvents.GetInstance().OnGoodUnEquippedEvent += new GoodUnEquippedEventHandler(UpdateGoodUnequip);
+             */
+            BusProvider.Instance.Register(this);
 
             //GenericStoreAssets.GetInstance().Prepare(0,"{\"categories\":[{\"name\":\"General\",\"goods_itemIds\":[\"fruit_cake\",\"pavlova\",\"chocolate_cake\",\"cream_cup\"]}],\"currencies\":[{\"name\":\"Muffins\",\"description\":\"\",\"itemId\":\"currency_muffin\",\"className\":\"VirtualCurrency\"}],\"currencyPacks\":[{\"name\":\"10 Muffins\",\"description\":\"Test refund of an item\",\"itemId\":\"muffins_10\",\"className\":\"VirtualCurrencyPack\",\"purchasableItem\":{\"purchaseType\":\"market\",\"marketItem\":{\"productId\":\"android.test.refunded\",\"consumable\":1,\"price\":0.99,\"marketPrice\":\"\",\"marketTitle\":\"\",\"marketDesc\":\"\"}},\"currency_amount\":10,\"currency_itemId\":\"currency_muffin\"},{\"name\":\"50 Muffins\",\"description\":\"Test cancellation of an item\",\"itemId\":\"muffins_50\",\"className\":\"VirtualCurrencyPack\",\"purchasableItem\":{\"purchaseType\":\"market\",\"marketItem\":{\"productId\":\"android.test.canceled\",\"consumable\":1,\"price\":1.99,\"marketPrice\":\"\",\"marketTitle\":\"\",\"marketDesc\":\"\"}},\"currency_amount\":50,\"currency_itemId\":\"currency_muffin\"},{\"name\":\"400 Muffins\",\"description\":\"Test purchase of an item\",\"itemId\":\"muffins_400\",\"className\":\"VirtualCurrencyPack\",\"purchasableItem\":{\"purchaseType\":\"market\",\"marketItem\":{\"productId\":\"android.test.purchased\",\"consumable\":1,\"price\":4.99,\"marketPrice\":\"\",\"marketTitle\":\"\",\"marketDesc\":\"\"}},\"currency_amount\":400,\"currency_itemId\":\"currency_muffin\"},{\"name\":\"1000 Muffins\",\"description\":\"Test item unavailable\",\"itemId\":\"muffins_1000\",\"className\":\"VirtualCurrencyPack\",\"purchasableItem\":{\"purchaseType\":\"market\",\"marketItem\":{\"productId\":\"2500_pack\",\"consumable\":1,\"price\":8.99,\"marketPrice\":\"\",\"marketTitle\":\"\",\"marketDesc\":\"\"}},\"currency_amount\":1000,\"currency_itemId\":\"currency_muffin\"}],\"goods\":{\"singleUse\":[{\"name\":\"Fruit Cake\",\"description\":\"Customers buy a double portion on each purchase of this cake\",\"itemId\":\"fruit_cake\",\"className\":\"SingleUseVG\",\"purchasableItem\":{\"purchaseType\":\"virtualItem\",\"pvi_itemId\":\"currency_muffin\",\"pvi_amount\":225}},{\"name\":\"Pavlova\",\"description\":\"Gives customers a sugar rush and they call their friends\",\"itemId\":\"pavlova\",\"className\":\"SingleUseVG\",\"purchasableItem\":{\"purchaseType\":\"virtualItem\",\"pvi_itemId\":\"currency_muffin\",\"pvi_amount\":175}},{\"name\":\"Chocolate Cake\",\"description\":\"A classic cake to maximize customer satisfaction\",\"itemId\":\"chocolate_cake\",\"className\":\"SingleUseVG\",\"purchasableItem\":{\"purchaseType\":\"virtualItem\",\"pvi_itemId\":\"currency_muffin\",\"pvi_amount\":250}},{\"name\":\"Cream Cup\",\"description\":\"Increase bakery reputation with this original pastry\",\"itemId\":\"cream_cup\",\"className\":\"SingleUseVG\",\"purchasableItem\":{\"purchaseType\":\"virtualItem\",\"pvi_itemId\":\"currency_muffin\",\"pvi_amount\":50}}],\"lifetime\":[],\"equippable\":[],\"goodUpgrades\":[],\"goodPacks\":[]},\"nonConsumables\":[{\"name\":\"No Ads\",\"description\":\"Test purchase of MANAGED item.\",\"itemId\":\"no_ads\",\"className\":\"NonConsumableItem\",\"purchasableItem\":{\"purchaseType\":\"market\",\"marketItem\":{\"productId\":\"no_ads\",\"consumable\":0,\"price\":1.99,\"marketPrice\":\"\",\"marketTitle\":\"\",\"marketDesc\":\"\"}}}]}");
 
@@ -52,7 +57,7 @@ namespace wp_store_example
             SoomlaStore.GetInstance().initialize(new StoreAssets(), true);
 
             /// Update the currencies balance on the GUI
-            UpdateCurrencyBalance(null, 0,0);
+            UpdateCurrencyBalance(new CurrencyBalanceChangedEvent(null, 0,0));
             buildShop();
 
             VirtualItemReward reward = new VirtualItemReward("firstTimeLaunch", "First Time Launch", StoreAssets.WEAK_CURRENCY_ITEM_ID, 1000);
@@ -238,29 +243,37 @@ namespace wp_store_example
             StoreInventory.UnEquipVirtualGood(equipButton.CommandParameter.ToString());
         }
 
-        private void UpdateGoodEquip(EquippableVG good)
+        [Subscribe]
+        public void UpdateGoodEquip(GoodEquippedEvent _event)
         {
+            EquippableVG good = _event.GetEquippableVG();
             Button equipB = (Button)MainStackPanel.FindName(good.getItemId() + "equip");
             equipB.Content = "unequip";
             equipB.Click -= equipItem;
             equipB.Click += unequipItem;
         }
 
-        private void UpdateGoodUnequip(EquippableVG good)
+        [Subscribe]
+        public void UpdateGoodUnequip(GoodUnEquippedEvent _event)
         {
+            EquippableVG good = _event.GetEquippableVG();
             Button equipB = (Button)MainStackPanel.FindName(good.getItemId() + "equip");
             equipB.Content = "equip";
             equipB.Click += equipItem;
             equipB.Click -= unequipItem;
         }
 
-        private void UpdateGoodBalance(VirtualGood good, int balance, int amountAdded)
+        [Subscribe]
+        public void UpdateGoodBalance(GoodBalanceChangedEvent _event)
         {
+            VirtualGood good = _event.GetGood();
+            int balance = _event.GetBalance();
             TextBlock balanceText = (TextBlock)MainStackPanel.FindName(good.getItemId() + "balance");
             balanceText.Text = "balance: " + balance.ToString();
         }
 
-        private void UpdateCurrencyBalance(VirtualCurrency currency, int balance, int amountAdded)
+        [Subscribe]
+        private void UpdateCurrencyBalance(CurrencyBalanceChangedEvent _event)
         {
             WeakCurrency.Text = StoreInventory.GetVirtualItemBalance(StoreAssets.WEAK_CURRENCY_ITEM_ID).ToString();
             StrongCurrency.Text = StoreInventory.GetVirtualItemBalance(StoreAssets.STRONG_CURRENCY_ITEM_ID).ToString();

@@ -96,8 +96,23 @@
     <Compile Include="billing\wp\store\MarketProductInfos.cs" />
     <Compile Include="data\GenericStoreAssets.cs" />
     <Compile Include="domain\VirtualItem.cs" />
+    <Compile Include="events\MarketPurchaseCancelledEvent.cs" />
+    <Compile Include="events\MarketPurchaseEvent.cs" />
+    <Compile Include="events\MarketPurchaseStartedEvent.cs" />
+    <Compile Include="events\RestoreTransactionsFinishedEvent.cs" />
+    <Compile Include="events\RestoreTransactionsStartedEvent.cs" />
+    <Compile Include="events\MarketItemsRefreshFinishedEvent.cs" />
+    <Compile Include="events\MarketItemsRefreshStartedEvent.cs" />
+    <Compile Include="events\CurrencyBalanceChangedEvent.cs" />
+    <Compile Include="events\GoodUnEquippedEvent.cs" />
+    <Compile Include="events\GoodEquippedEvent.cs" />
+    <Compile Include="events\GoodBalanceChangedEvent.cs" />
+    <Compile Include="events\GoodUpgradeEvent.cs" />
+    <Compile Include="events\UnexpectedStoreErrorEvent.cs" />
+    <Compile Include="events\SoomlaStoreInitializedEvent.cs" />
+    <Compile Include="events\ItemPurchasedEvent.cs" />
+    <Compile Include="events\ItemPurchaseStartedEvent.cs" />
     <Compile Include="rewards\VirtualItemReward.cs" />
-    <Compile Include="StoreEvents.cs" />
     <Compile Include="IStoreAssets.cs" />
     <Compile Include="purchasesTypes\PurchaseType.cs" />
     <Compile Include="SoomlaStore.cs" />
@@ -184,6 +199,7 @@
       <Name>soomla-wp-core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).$(TargetFrameworkVersion).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\$(TargetFrameworkIdentifier)\$(TargetFrameworkVersion)\Microsoft.$(TargetFrameworkIdentifier).CSharp.targets" />
   <ProjectExtensions />
