@@ -641,7 +641,16 @@ public class StoreInfo {
             mVirtualItems.Add(vi.getItemId(), vi);
 
             if (vi is UpgradeVG) {
-                List<UpgradeVG> upgrades = mGoodsUpgrades[((UpgradeVG) vi).getGoodItemId()];
+                List<UpgradeVG> upgrades;
+                if (mGoodsUpgrades.ContainsKey(((UpgradeVG)vi).getGoodItemId()))
+                {
+                    upgrades = mGoodsUpgrades[((UpgradeVG)vi).getGoodItemId()];
+                }
+                else
+                {
+                    upgrades = null;
+                }
+                
                 if (upgrades == null) {
                     upgrades = new List<UpgradeVG>();
                     mGoodsUpgrades.Add(((UpgradeVG) vi).getGoodItemId(), upgrades);
@@ -690,8 +699,8 @@ public class StoreInfo {
         }
         if (mt_ver < StoreConfig.METADATA_VERSION || sa_ver_old < mCurrentAssetsVersion) {
 
-            prefs.Add("MT_VER", StoreConfig.METADATA_VERSION);
-            prefs.Add("SA_VER_OLD", mCurrentAssetsVersion);
+            prefs["MT_VER"] = StoreConfig.METADATA_VERSION;
+            prefs["SA_VER_OLD"] = mCurrentAssetsVersion;
             prefs.Save();
             if (mt_ver > -1)
             {
